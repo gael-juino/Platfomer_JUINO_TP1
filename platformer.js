@@ -27,6 +27,8 @@ function init(){
 	var stars;
 	var scoreText;
 	var bomb;
+	var batt;
+	var sam;
 }
 
 function preload(){
@@ -36,11 +38,12 @@ function preload(){
 	this.load.image('background4','assets/background4.png');
 	this.load.image('background5','assets/background5.png');
 	this.load.image('background6','assets/background6.png');
-	this.load.image('piece','assets/',{frameWidth: 32, frameHeight: 48});
+	this.load.image('piece','assets/piece.png');
 	this.load.image('platforms','assets/platforms.png');
 	this.load.image('platforme','assets/platforme.png');
-	this.load.image('bat','assets/bat.png',{frameWidth: 32, frameHeight: 48});
+	this.load.image('bat','assets/bat.png',{frameWidth: 6, frameHeight: 12});
 	this.load.spritesheet('slime','assets/slime.png',{frameWidth: 13, frameHeight: 16});
+	//this.load.spritesheet('batt','assets/batt.png',{frameWidth: 16, frameHeight: 16});
 }
 
 
@@ -95,19 +98,14 @@ function create(){
 		//6EME niv//
 		platforms.create(750,150,'platforme').setScale(1.1).refreshBody();
 
-	
 
-
-
-
-	player = this.physics.add.sprite(100,450,'slime');
+	//PLAYER//
+	player = this.physics.add.sprite(100,400,'slime');
 	player.setCollideWorldBounds(true);
 	player.setBounce(0.2);
 	player.body.setGravityY(000);
 	this.physics.add.collider(player,platforms);
-	
-	cursors = this.input.keyboard.createCursorKeys(); 
-	
+
 	this.anims.create({
 		key:'left',
 		frames: this.anims.generateFrameNumbers('slime', {start: 0, end: 3}),
@@ -120,21 +118,72 @@ function create(){
 		frames: [{key: 'slime', frame:4}],
 		frameRate: 20
 	});
-	
-	stars = this.physics.add.group({
-		key: 'piece',
-		repeat:11,
-		setXY: {x:12,y:0,stepX:70}
+
+	//batt//
+	batt = this.physics.add.sprite(250,100,'bat');
+	batt.setCollideWorldBounds(true);
+	this.physics.add.collider(batt,platforms);
+
+	this.anims.create({
+		key:'fly',
+		frames: this.anims.generateFrameNumbers('batt', {start: 0, end: 3}),
+		frameRate: 10,
+		repeat: -1
 	});
 
-	
-	this.physics.add.collider(stars,platforms);
-	this.physics.add.overlap(player,stars,collectStar,null,this);
+	//SAM//
+	sam = this.physics.add.sprite(600,50,'bat');
+	sam.setCollideWorldBounds(true);
+	this.physics.add.collider(batt,platforms);
 
+	this.anims.create({
+		key:'fly',
+		frames: this.anims.generateFrameNumbers('batt', {start: 0, end: 3}),
+		frameRate: 10,
+		repeat: -1
+	});
+
+
+
+	//piece//
+		stars = this.physics.add.group();
+	
+		//NIV1//
+		stars.create(690,440,'piece');
+
+		//NIV2//
+		stars.create(220,400,'piece');
+
+		//NIV3//
+		stars.create(50,320,'piece');
+
+		//NIV4//
+		stars.create(470,280,'piece');
+
+		//NIV5//
+		stars.create(120,160,'piece');
+
+		//NIV6//
+		stars.create(750,120,'piece');
+
+		this.physics.add.collider(stars, platforms);
+		this.physics.add.collider(stars, player, collectStar, null, this);
+
+		
+
+	cursors = this.input.keyboard.createCursorKeys(); 
+	
+	//SCORE//
 	scoreText = this.add.text(16,16, 'score: 0', {fontSize: '32px', fill:'#000'});
 	bombs = this.physics.add.group();
 	this.physics.add.collider(bombs,platforms);
 	this.physics.add.collider(player,bombs, hitBomb, null, this);
+	this.anims.create({
+		key:'monstre',
+		frames: this.anims.generateFrameNumbers('bat', {start: 0, end: 3}),
+		frameRate: 10,
+		repeat: -1
+	});
 }
 
 
@@ -155,9 +204,50 @@ function update(){
 	
 	if(cursors.up.isDown && player.body.touching.down){
 		player.setVelocityY(-330);
-	} 
-	
+	}
+
+	//BATT//
+	if (batt.y <= 150) {
+		this.tweens.add({
+			targets: batt,
+			y:600,
+		    ease: 'Linear',
+		    duration: 4000,
+		});
+		//batt.anims.play('fly', true);
+	}
+
+	if (batt.y >= 300) {
+		this.tweens.add({
+			targets: batt,
+			y:10,
+			duration: 1000,
+		});
+		//batt.anims.play('fly', true);
+	}
+ 
+	//SAM//
+	if (sam.y <= 100) {
+		this.tweens.add({
+			targets: sam,
+			y:650,
+		    ease: 'Linear',
+		    duration: 4000,
+		});
+		//batt.anims.play('fly', true);
+	}
+
+	if (sam.y >= 250) {
+		this.tweens.add({
+			targets: sam,
+			y:10,
+			duration: 1000,
+		});
+		//batt.anims.play('fly', true);
+	}
+
 }
+
 function hitBomb(player, bomb){
 	this.physics.pause();
 	player.setTint(0xff0000);
@@ -171,12 +261,13 @@ function collectStar(player, star){
 	scoreText.setText('score: '+score);
 	if(stars.countActive(true)===0){
 		stars.children.iterate(function(child){
-			child.enableBody(true,child.x,0, true, true);
+			child.enableBody(true,child.x,child.y, true, true);
 		});
 		
 		var x = (player.x < 400) ? 
 			Phaser.Math.Between(400,800):
 			Phaser.Math.Between(0,400);
+
 		var bomb = bombs.create(x, 16, 'bat');
 		bomb.setBounce(1);
 		bomb.setCollideWorldBounds(true);
