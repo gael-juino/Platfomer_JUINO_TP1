@@ -10,7 +10,6 @@ physics: {
         }
     },
 scene: {
-		init: init,
 		preload: preload,
 		create: create,
 		update: update
@@ -20,7 +19,7 @@ scene: {
 var game = new Phaser.Game(config);
 var score = 0;
 
-function init(){
+
  	var platforms;
 	var player;
 	var cursors; 
@@ -29,7 +28,9 @@ function init(){
 	var bomb;
 	var batt;
 	var sam;
-}
+	var Vie;
+	var nVie = 3;
+
 
 function preload(){
 	this.load.image('background1','assets/background1.png');
@@ -39,6 +40,10 @@ function preload(){
 	this.load.image('background5','assets/background5.png');
 	this.load.image('background6','assets/background6.png');
 	this.load.image('piece','assets/piece.png');
+	this.load.image('vie0','assets/vie0.png');
+	this.load.image('vie3','assets/vie3.png');
+	this.load.image('vie2','assets/vie2.png');
+	this.load.image('vie1','assets/vie1.png');
 	this.load.image('platforms','assets/platforms.png');
 	this.load.image('platforme','assets/platforme.png');
 	this.load.image('bat','assets/bat.png',{frameWidth: 6, frameHeight: 12});
@@ -49,12 +54,19 @@ function preload(){
 
 
 function create(){
+	//BACKGROUND//
 	this.add.image(400,300,'background1');
 	this.add.image(400,300,'background2');
 	this.add.image(400,300,'background3');
 	this.add.image(400,300,'background4');
 	this.add.image(400,300,'background5');
 	this.add.image(400,300,'background6');
+
+	//VIE//
+	this.load.image('vie0','assets/vie0.png');
+	this.load.image('vie3','assets/vie3.png');
+	this.load.image('vie2','assets/vie2.png');
+	this.load.image('vie1','assets/vie1.png');
 
 	//sol//
 	platforms = this.physics.add.staticGroup();
@@ -105,6 +117,8 @@ function create(){
 	player.setBounce(0.2);
 	player.body.setGravityY(000);
 	this.physics.add.collider(player,platforms);
+	
+	
 
 	this.anims.create({
 		key:'left',
@@ -112,17 +126,24 @@ function create(){
 		frameRate: 10,
 		repeat: -1
 	});
-	
 	this.anims.create({
 		key:'stop',
 		frames: [{key: 'slime', frame:4}],
 		frameRate: 20
 	});
 
+	//VIE//
+		//PLAYER//
+		vie0 = this.add.image(0,0, 'vie0').setOrigin(0,0);
+        vie1 = this.add.image(0,0, 'vie1').setOrigin(0,0);
+        vie2 = this.add.image(0,0, 'vie2').setOrigin(0,0);
+        vie3 = this.add.image(0,0, 'vie3').setOrigin(0,0);
+
 	//batt//
 	batt = this.physics.add.sprite(250,100,'bat');
 	batt.setCollideWorldBounds(true);
-	this.physics.add.collider(batt,platforms);
+	this.physics.add.collider(batt, platforms);
+	this.physics.add.overlap(player, batt, hitbatt, null, this);
 
 	this.anims.create({
 		key:'fly',
@@ -134,7 +155,8 @@ function create(){
 	//SAM//
 	sam = this.physics.add.sprite(600,50,'bat');
 	sam.setCollideWorldBounds(true);
-	this.physics.add.collider(batt,platforms);
+	this.physics.add.collider(batt, platforms);
+	this.physics.add.overlap(player, sam, hitsam, null, this);
 
 	this.anims.create({
 		key:'fly',
@@ -155,16 +177,16 @@ function create(){
 		stars.create(220,400,'piece');
 
 		//NIV3//
-		stars.create(50,320,'piece');
+		//stars.create(50,320,'piece');
 
 		//NIV4//
-		stars.create(470,280,'piece');
+		//stars.create(470,280,'piece');
 
 		//NIV5//
-		stars.create(120,160,'piece');
+		//stars.create(120,160,'piece');
 
 		//NIV6//
-		stars.create(750,120,'piece');
+		//stars.create(750,120,'piece');
 
 		this.physics.add.collider(stars, platforms);
 		this.physics.add.collider(stars, player, collectStar, null, this);
@@ -172,12 +194,14 @@ function create(){
 		
 
 	cursors = this.input.keyboard.createCursorKeys(); 
-	
+
 	//SCORE//
 	scoreText = this.add.text(16,16, 'score: 0', {fontSize: '32px', fill:'#000'});
+
+	//BOMB//
 	bombs = this.physics.add.group();
 	this.physics.add.collider(bombs,platforms);
-	this.physics.add.collider(player,bombs, hitBomb, null, this);
+	this.physics.add.overlap(player,bombs, hitBomb, null, this);
 	this.anims.create({
 		key:'monstre',
 		frames: this.anims.generateFrameNumbers('bat', {start: 0, end: 3}),
@@ -245,14 +269,38 @@ function update(){
 		});
 		//batt.anims.play('fly', true);
 	}
+	//VIE//
+	if (nVie==2) {
+            vie3.destroy(true);
+
+        }
+    if (nVie==1) {
+            vie2.destroy(true);
+        }
+    if (nVie==0) {
+            vie1.destroy(true);
+            gameOver=true;
+            this.physics.pause();
+			player.setTint(0xff0000);
+			player.anims.play('turn');
+        }
+
 
 }
 
 function hitBomb(player, bomb){
-	this.physics.pause();
-	player.setTint(0xff0000);
-	player.anims.play('turn');
-	gameOver=true;
+	bomb.disableBody(true,true);
+	nVie--;
+}
+
+function hitsam(player, sam){
+	sam.disableBody(true,true);
+	nVie--;
+}
+
+function hitbatt(player, batt){
+	batt.disableBody(true,true);
+	nVie--;
 }
 
 function collectStar(player, star){
