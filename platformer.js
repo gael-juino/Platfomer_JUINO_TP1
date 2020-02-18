@@ -30,22 +30,36 @@ var score = 0;
 	var sam;
 	var Vie;
 	var nVie = 3;
+	var potionHeal;
 
 
 function preload(){
+
+	//background//
 	this.load.image('background1','assets/background1.png');
 	this.load.image('background2','assets/background2.png');
 	this.load.image('background3','assets/background3.png');
 	this.load.image('background4','assets/background4.png');
 	this.load.image('background5','assets/background5.png');
 	this.load.image('background6','assets/background6.png');
+
+	//piece//
 	this.load.image('piece','assets/piece.png');
+
+	//vie//
 	this.load.image('vie0','assets/vie0.png');
 	this.load.image('vie3','assets/vie3.png');
 	this.load.image('vie2','assets/vie2.png');
 	this.load.image('vie1','assets/vie1.png');
+
+	//potion//
+	this.load.image('potionHeal','assets/potionHeal.png');
+
+	//platforms//
 	this.load.image('platforms','assets/platforms.png');
 	this.load.image('platforme','assets/platforme.png');
+
+	//personnage//
 	this.load.image('bat','assets/bat.png',{frameWidth: 6, frameHeight: 12});
 	this.load.spritesheet('slime','assets/slime.png',{frameWidth: 13, frameHeight: 16});
 	//this.load.spritesheet('batt','assets/batt.png',{frameWidth: 16, frameHeight: 16});
@@ -110,6 +124,9 @@ function create(){
 		//6EME niv//
 		platforms.create(750,150,'platforme').setScale(1.1).refreshBody();
 
+	//POTION//
+		//HEAL//
+		this.load.image('potionHeal,assets/potionHeal.png');
 
 	//PLAYER//
 	player = this.physics.add.sprite(100,400,'slime');
