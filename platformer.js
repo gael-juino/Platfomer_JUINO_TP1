@@ -36,10 +36,11 @@ function preload(){
 	this.load.image('background4','assets/background4.png');
 	this.load.image('background5','assets/background5.png');
 	this.load.image('background6','assets/background6.png');
-	this.load.image('piece','assets/piece.png');
-	this.load.image('sol','assets/sol.png');
-	this.load.image('bat','assets/bat.png');
-	this.load.spritesheet('slime','assets/slime.png',{frameWidth: 32, frameHeight: 48});
+	this.load.image('piece','assets/',{frameWidth: 32, frameHeight: 48});
+	this.load.image('platforms','assets/platforms.png');
+	this.load.image('platforme','assets/platforme.png');
+	this.load.image('bat','assets/bat.png',{frameWidth: 32, frameHeight: 48});
+	this.load.spritesheet('slime','assets/slime.png',{frameWidth: 13, frameHeight: 16});
 }
 
 
@@ -52,11 +53,53 @@ function create(){
 	this.add.image(400,300,'background5');
 	this.add.image(400,300,'background6');
 
+	//sol//
 	platforms = this.physics.add.staticGroup();
-	platforms.create(400,568,'sol').setScale(2).refreshBody();
-	platforms.create(600,400,'sol');
-	platforms.create(50,250,'sol');
+	platforms.create(20,580,'platforms').setScale(1.2).refreshBody();
+	platforms.create(60,580,'platforms').setScale(1.2).refreshBody();
+	platforms.create(100,580,'platforms').setScale(1.2).refreshBody();
+	platforms.create(140,580,'platforms').setScale(1.2).refreshBody();
+	platforms.create(180,580,'platforms').setScale(1.2).refreshBody();
+	platforms.create(220,580,'platforms').setScale(1.2).refreshBody();
+	platforms.create(260,580,'platforms').setScale(1.2).refreshBody();
+	platforms.create(300,580,'platforms').setScale(1.2).refreshBody();
+	platforms.create(340,580,'platforms').setScale(1.2).refreshBody();
+	platforms.create(380,580,'platforms').setScale(1.2).refreshBody();
+	platforms.create(420,580,'platforms').setScale(1.2).refreshBody();
+	platforms.create(460,580,'platforms').setScale(1.2).refreshBody();
+	platforms.create(500,580,'platforms').setScale(1.2).refreshBody();
+	platforms.create(540,580,'platforms').setScale(1.2).refreshBody();
+	platforms.create(580,580,'platforms').setScale(1.2).refreshBody();
+	platforms.create(620,580,'platforms').setScale(1.2).refreshBody();
+	platforms.create(660,580,'platforms').setScale(1.2).refreshBody();
+	platforms.create(700,580,'platforms').setScale(1.2).refreshBody();
+	platforms.create(740,580,'platforms').setScale(1.2).refreshBody();
+	platforms.create(780,580,'platforms').setScale(1.2).refreshBody();
+
+	//platforme//
+		//1ER niv//
+		platforms.create(690,490,'platforme').setScale(1.1).refreshBody();
+
+		//2EME niv//
+		platforms.create(220,450,'platforme').setScale(1.1).refreshBody();
+
+		//3EME niv//
+		platforms.create(50,370,'platforme').setScale(1.1).refreshBody();
+
+		//4EME niv//
+		platforms.create(470,320,'platforme').setScale(1.1).refreshBody();
+
+		//5EME niv//
+		platforms.create(120,200,'platforme').setScale(1.1).refreshBody();
+
+		//6EME niv//
+		platforms.create(750,150,'platforme').setScale(1.1).refreshBody();
+
 	
+
+
+
+
 	player = this.physics.add.sprite(100,450,'slime');
 	player.setCollideWorldBounds(true);
 	player.setBounce(0.2);
@@ -83,6 +126,7 @@ function create(){
 		repeat:11,
 		setXY: {x:12,y:0,stepX:70}
 	});
+
 	
 	this.physics.add.collider(stars,platforms);
 	this.physics.add.overlap(player,stars,collectStar,null,this);
