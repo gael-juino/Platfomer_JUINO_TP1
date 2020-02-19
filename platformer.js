@@ -240,13 +240,23 @@ function create(){
 function update(){
 	if(cursors.left.isDown){
 		player.anims.play('left', true);
-		player.setVelocityX(-300);
+		player.setVelocityX(-200);
 		player.setFlipX(false);
-	}else if(cursors.right.isDown){
-		player.setVelocityX(300);
+
+		if (cursors.shift.isDown) {
+			player.setVelocityX(-300);
+		}
+	}
+	else if(cursors.right.isDown){
+		player.setVelocityX(200);
 		player.anims.play('left', true);
 		player.setFlipX(true);
-	}else{
+
+		if (cursors.shift.isDown) {
+			player.setVelocityX(300);
+		}
+	}
+	else{
 		player.anims.play('stop', true);
 		player.setVelocityX(0);
 	}
