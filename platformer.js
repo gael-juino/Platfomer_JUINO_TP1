@@ -53,7 +53,7 @@ function preload(){
 	this.load.image('vie1','assets/vie1.png');
 
 	//potion//
-	this.load.image('potionHeal','assets/potionHeal.png');
+	this.load.image('potion','assets/potionHeal.png');
 
 	//platforms//
 	this.load.image('platforms','assets/platforms.png');
@@ -81,6 +81,8 @@ function create(){
 	this.load.image('vie3','assets/vie3.png');
 	this.load.image('vie2','assets/vie2.png');
 	this.load.image('vie1','assets/vie1.png');
+
+	
 
 	//sol//
 	platforms = this.physics.add.staticGroup();
@@ -124,16 +126,14 @@ function create(){
 		//6EME niv//
 		platforms.create(750,150,'platforme').setScale(1.1).refreshBody();
 
-	//POTION//
-		//HEAL//
-		this.load.image('potionHeal,assets/potionHeal.png');
+
 
 	//PLAYER//
-	player = this.physics.add.sprite(100,400,'slime');
-	player.setCollideWorldBounds(true);
-	player.setBounce(0.2);
-	player.body.setGravityY(000);
-	this.physics.add.collider(player,platforms);
+		player = this.physics.add.sprite(100,550,'slime');
+		player.setCollideWorldBounds(true);
+		player.setBounce(0.2);
+		player.body.setGravityY(000);
+		this.physics.add.collider(player,platforms);
 	
 	
 
@@ -157,10 +157,10 @@ function create(){
         vie3 = this.add.image(0,0, 'vie3').setOrigin(0,0);
 
 	//batt//
-	batt = this.physics.add.sprite(250,100,'bat');
-	batt.setCollideWorldBounds(true);
-	this.physics.add.collider(batt, platforms);
-	this.physics.add.overlap(player, batt, hitbatt, null, this);
+		batt = this.physics.add.sprite(250,100,'bat');
+		batt.setCollideWorldBounds(true);
+		this.physics.add.collider(batt, platforms);
+		this.physics.add.overlap(player, batt, hitbatt, null, this);
 
 	this.anims.create({
 		key:'fly',
@@ -170,10 +170,10 @@ function create(){
 	});
 
 	//SAM//
-	sam = this.physics.add.sprite(600,50,'bat');
-	sam.setCollideWorldBounds(true);
-	this.physics.add.collider(batt, platforms);
-	this.physics.add.overlap(player, sam, hitsam, null, this);
+		sam = this.physics.add.sprite(600,50,'bat');
+		sam.setCollideWorldBounds(true);
+		this.physics.add.collider(batt, platforms);
+		this.physics.add.overlap(player, sam, hitsam, null, this);
 
 	this.anims.create({
 		key:'fly',
@@ -181,6 +181,14 @@ function create(){
 		frameRate: 10,
 		repeat: -1
 	});
+
+	//POTION//
+		//HEAL//
+		potionHeal = this.physics.add.group();
+		potionHeal.create(500,542,'potion');
+
+		this.physics.add.collider(potionHeal, platforms);
+		this.physics.add.overlap(potionHeal, player, collectHeal, null, this);
 
 
 
@@ -213,7 +221,7 @@ function create(){
 	cursors = this.input.keyboard.createCursorKeys(); 
 
 	//SCORE//
-	scoreText = this.add.text(16,16, 'score: 0', {fontSize: '32px', fill:'#000'});
+	scoreText = this.add.text(600,16, 'score: 0', {fontSize: '32px', fill:'#000'});
 
 	//BOMB//
 	bombs = this.physics.add.group();
@@ -287,12 +295,14 @@ function update(){
 		//batt.anims.play('fly', true);
 	}
 	//VIE//
+
 	if (nVie==2) {
             vie3.destroy(true);
 
         }
     if (nVie==1) {
             vie2.destroy(true);
+			
         }
     if (nVie==0) {
             vie1.destroy(true);
@@ -301,6 +311,9 @@ function update(){
 			player.setTint(0xff0000);
 			player.anims.play('turn');
         }
+
+
+	
 
 
 }
@@ -324,6 +337,7 @@ function collectStar(player, star){
 	star.disableBody(true,true);
 	score += 10;
 	scoreText.setText('score: '+score);
+
 	if(stars.countActive(true)===0){
 		stars.children.iterate(function(child){
 			child.enableBody(true,child.x,child.y, true, true);
@@ -338,4 +352,42 @@ function collectStar(player, star){
 		bomb.setCollideWorldBounds(true);
 		bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
 	}
+}
+
+function collectHeal(player, potion) {
+	if (nVie == 3) {
+		potion.disableBody(true,true);
+		score += 10;
+		scoreText.setText('score: '+score);
+
+		if(potionHeal.countActive(true)===0){
+			potionHeal.children.iterate(function(child){
+			child.enableBody(true,child.x,child.y - 170, true, true);
+			});
+		}
+		
+	}
+
+	if (nVie < 3) {
+		potion.disableBody(true,true);
+		nVie++;
+		score += 10;
+		scoreText.setText('score: '+score);
+		
+		if(potionHeal.countActive(true)===0){
+			potionHeal.children.iterate(function(child){
+			child.enableBody(true,child.x,child.y - 170, true, true);
+			});
+		}
+
+		
+		if (nVie==3) {
+    	vie3 = this.add.image(0,0, 'vie3').setOrigin(0,0);
+    	}
+
+    	if (nVie==2) {
+    	vie2 = this.add.image(0,0, 'vie2').setOrigin(0,0);
+    	}
+	}
+	
 }
