@@ -182,15 +182,6 @@ function create(){
 		repeat: -1
 	});
 
-	//POTION//
-		//HEAL//
-		potionHeal = this.physics.add.group();
-		potionHeal.create(500,542,'potion');
-
-		this.physics.add.collider(potionHeal, platforms);
-		this.physics.add.overlap(potionHeal, player, collectHeal, null, this);
-
-
 
 	//piece//
 		stars = this.physics.add.group();
@@ -199,7 +190,7 @@ function create(){
 		stars.create(690,440,'piece');
 
 		//NIV2//
-		stars.create(220,400,'piece');
+		//stars.create(220,400,'piece');
 
 		//NIV3//
 		//stars.create(50,320,'piece');
@@ -226,13 +217,22 @@ function create(){
 	//BOMB//
 	bombs = this.physics.add.group();
 	this.physics.add.collider(bombs,platforms);
-	this.physics.add.overlap(player,bombs, hitBomb, null, this);
+	this.physics.add.overlap(player, bombs, hitBomb, null, this);
 	this.anims.create({
 		key:'monstre',
 		frames: this.anims.generateFrameNumbers('bat', {start: 0, end: 3}),
 		frameRate: 10,
 		repeat: -1
 	});
+
+	//POTION//
+		//HEAL//
+		potionHeal = this.physics.add.group();
+		potionHeal.create(500,542,'potion');
+
+		this.physics.add.collider(potionHeal, platforms);
+		this.physics.add.overlap(potionHeal, player, collectHeal, null, this);
+		this.physics.add.overlap(bombs, potionHeal, collectHealBombs, null, this);
 }
 
 
@@ -319,8 +319,21 @@ function update(){
 }
 
 function hitBomb(player, bomb){
-	bomb.disableBody(true,true);
 	nVie--;
+	score -= 5;
+	scoreText.setText('score: '+score);
+	bomb.destroy();
+}
+
+function hitPotion(bomb, potion) {
+
+	console.log('touch');
+
+	bomb.disableBody(true,true);
+	potion.disableBody(true,true);
+
+	score -= 5;
+	scoreText.setText('score: '+score);
 }
 
 function hitsam(player, sam){
@@ -373,7 +386,6 @@ function collectHeal(player, potion) {
 		nVie++;
 		score += 10;
 		scoreText.setText('score: '+score);
-		
 		if(potionHeal.countActive(true)===0){
 			potionHeal.children.iterate(function(child){
 			child.enableBody(true,child.x,child.y - 170, true, true);
@@ -390,4 +402,10 @@ function collectHeal(player, potion) {
     	}
 	}
 	
+}
+function collectHealBombs(bombs, potion) {
+	potion.disableBody(true,true);
+	bombs.destroy();
+	score -= 5;
+	scoreText.setText('score: '+score);
 }
