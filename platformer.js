@@ -32,6 +32,8 @@ var score = 0;
 	var Vie;
 	var nVie = 3;
 	var potionHeal;
+	var saut = 2;
+	var nSaut = 1;
 
 
 function preload(){
@@ -267,6 +269,8 @@ function create(){
 
 
 function update(){
+
+
 	if(cursors.left.isDown){
 		player.anims.play('left', true);
 		player.setVelocityX(-200);
@@ -293,8 +297,32 @@ function update(){
 	}
 	
 	if(cursors.up.isDown && player.body.touching.down){
-		player.setVelocityY(-330);
+		saut = 2;
 	}
+
+	if ((nSaut==1) && saut>0 && cursors.up.isDown){
+		saut --;
+		nSaut=0;
+		if (saut == 1) {
+		player.setVelocityY(-330);
+			if (player.body.velocity.y<0) {
+				player.anims.play('left',true);
+			}
+		}
+
+		if (saut == 0) {
+		player.setVelocityY(-330);
+			if (player.body.velocity.y<0) {
+				player.anims.play('left',true);
+			}
+		}
+	}
+
+	if (cursors.up.isUp) {
+		nSaut=1;
+	}
+
+
 
 	//BATT//
 	if (batt.y <= 150) {
@@ -479,6 +507,7 @@ function collectHeal(player, potion) {
 
 function collectHealSlime(slime, potion) {
 
+
 	potion.disableBody(true,true);
 
 	if(potionHeal.countActive(true)===0){
@@ -495,6 +524,8 @@ function collectHealBombs(bomb, potion) {
 	bomb.disableBody(true,true);
 	potion.disableBody(true,true);
 
+
 	score -= 5;
 	scoreText.setText('score: '+score);
 }
+
