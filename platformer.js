@@ -28,9 +28,12 @@ var score = 0;
 	var bomb;
 	var batt;
 	var sam;
+	var slime;
 	var Vie;
 	var nVie = 3;
 	var potionHeal;
+	var saut = 2;
+	var nSaut = 1;
 
 
 function preload(){
@@ -61,7 +64,8 @@ function preload(){
 
 	//personnage//
 	this.load.image('bat','assets/bat.png',{frameWidth: 6, frameHeight: 12});
-	this.load.spritesheet('slime','assets/slime.png',{frameWidth: 13, frameHeight: 16});
+	this.load.spritesheet('adventurer','assets/adventurer.png',{frameWidth: 20, frameHeight: 35});
+	this.load.spritesheet('slime','assets/slime.png',{frameWidth: 30, frameHeight: 25});
 	//this.load.spritesheet('batt','assets/batt.png',{frameWidth: 16, frameHeight: 16});
 }
 
@@ -129,11 +133,69 @@ function create(){
 
 
 	//PLAYER//
-		player = this.physics.add.sprite(100,550,'slime');
+		player = this.physics.add.sprite(100,500,'adventurer');
 		player.setCollideWorldBounds(true);
 		player.setBounce(0.2);
 		player.body.setGravityY(000);
 		this.physics.add.collider(player,platforms);
+	
+	
+
+	this.anims.create({
+		key:'left',
+		frames: this.anims.generateFrameNumbers('adventurer', {start: 0, end: 3}),
+		frameRate: 10,
+		repeat: -1
+	});
+	this.anims.create({
+		key:'stop',
+		frames: [{key: 'adventurer', frame:4}],
+		frameRate: 20
+	});
+
+	
+
+	//VIE//
+		//PLAYER//
+		vie0 = this.add.image(0,0, 'vie0').setOrigin(0,0);
+        vie1 = this.add.image(0,0, 'vie1').setOrigin(0,0);
+        vie2 = this.add.image(0,0, 'vie2').setOrigin(0,0);
+        vie3 = this.add.image(0,0, 'vie3').setOrigin(0,0);
+
+	//batt//
+		batt = this.physics.add.sprite(250,100,'bat');
+		batt.setCollideWorldBounds(true);
+		batt.body.setGravityY(-300);
+		this.physics.add.collider(batt, platforms);
+		this.physics.add.overlap(player, batt, hitbatt, null, this);
+
+	this.anims.create({
+		key:'fly',
+		frames: this.anims.generateFrameNumbers('batt', {start: 0, end: 3}),
+		frameRate: 10,
+		repeat: -1
+	});
+
+	//SAM//
+		sam = this.physics.add.sprite(600,50,'bat');
+		sam.setCollideWorldBounds(true);
+		sam.body.setGravityY(-300);
+		this.physics.add.collider(batt, platforms);
+		this.physics.add.overlap(player, sam, hitsam, null, this);
+
+	this.anims.create({
+		key:'fly',
+		frames: this.anims.generateFrameNumbers('batt', {start: 0, end: 3}),
+		frameRate: 10,
+		repeat: -1
+	});
+
+	//slime//
+		slime = this.physics.add.sprite(200,500,'slime');
+		slime.setCollideWorldBounds(true);
+		slime.body.setGravityY(000);
+		this.physics.add.collider(slime, platforms);
+		this.physics.add.collider(slime, player);
 	
 	
 
@@ -149,39 +211,6 @@ function create(){
 		frameRate: 20
 	});
 
-	//VIE//
-		//PLAYER//
-		vie0 = this.add.image(0,0, 'vie0').setOrigin(0,0);
-        vie1 = this.add.image(0,0, 'vie1').setOrigin(0,0);
-        vie2 = this.add.image(0,0, 'vie2').setOrigin(0,0);
-        vie3 = this.add.image(0,0, 'vie3').setOrigin(0,0);
-
-	//batt//
-		batt = this.physics.add.sprite(250,100,'bat');
-		batt.setCollideWorldBounds(true);
-		this.physics.add.collider(batt, platforms);
-		this.physics.add.overlap(player, batt, hitbatt, null, this);
-
-	this.anims.create({
-		key:'fly',
-		frames: this.anims.generateFrameNumbers('batt', {start: 0, end: 3}),
-		frameRate: 10,
-		repeat: -1
-	});
-
-	//SAM//
-		sam = this.physics.add.sprite(600,50,'bat');
-		sam.setCollideWorldBounds(true);
-		this.physics.add.collider(batt, platforms);
-		this.physics.add.overlap(player, sam, hitsam, null, this);
-
-	this.anims.create({
-		key:'fly',
-		frames: this.anims.generateFrameNumbers('batt', {start: 0, end: 3}),
-		frameRate: 10,
-		repeat: -1
-	});
-
 
 	//piece//
 		stars = this.physics.add.group();
@@ -190,7 +219,7 @@ function create(){
 		stars.create(690,440,'piece');
 
 		//NIV2//
-		//stars.create(220,400,'piece');
+		stars.create(220,400,'piece');
 
 		//NIV3//
 		//stars.create(50,320,'piece');
@@ -231,29 +260,69 @@ function create(){
 		potionHeal.create(500,542,'potion');
 
 		this.physics.add.collider(potionHeal, platforms);
+		this.physics.add.collider(potionHeal, slime);
 		this.physics.add.overlap(potionHeal, player, collectHeal, null, this);
 		this.physics.add.overlap(bombs, potionHeal, collectHealBombs, null, this);
+		this.physics.add.overlap(slime, potionHeal, collectHealSlime, null, this);
 }
 
 
 
 function update(){
+
+
 	if(cursors.left.isDown){
 		player.anims.play('left', true);
-		player.setVelocityX(-300);
+		player.setVelocityX(-200);
 		player.setFlipX(false);
-	}else if(cursors.right.isDown){
-		player.setVelocityX(300);
+
+		//COURRIR//
+		if (cursors.shift.isDown) {
+			player.setVelocityX(-300);
+		}
+	}
+	else if(cursors.right.isDown){
+		player.setVelocityX(200);
 		player.anims.play('left', true);
 		player.setFlipX(true);
-	}else{
+
+		//COURRIR//
+		if (cursors.shift.isDown) {
+			player.setVelocityX(300);
+		}
+	}
+	else{
 		player.anims.play('stop', true);
 		player.setVelocityX(0);
 	}
 	
 	if(cursors.up.isDown && player.body.touching.down){
-		player.setVelocityY(-330);
+		saut = 2;
 	}
+
+	if ((nSaut==1) && saut>0 && cursors.up.isDown){
+		saut --;
+		nSaut=0;
+		if (saut == 1) {
+		player.setVelocityY(-330);
+			if (player.body.velocity.y<0) {
+				player.anims.play('left',true);
+			}
+		}
+
+		if (saut == 0) {
+		player.setVelocityY(-330);
+			if (player.body.velocity.y<0) {
+				player.anims.play('left',true);
+			}
+		}
+	}
+
+	if (cursors.up.isUp) {
+		nSaut=1;
+	}
+
+
 
 	//BATT//
 	if (batt.y <= 150) {
@@ -290,12 +359,34 @@ function update(){
 		this.tweens.add({
 			targets: sam,
 			y:10,
+			ease: 'Linear',
 			duration: 1000,
 		});
 		//batt.anims.play('fly', true);
 	}
-	//VIE//
 
+	//SLIME//
+	if (slime.x <= 200) {
+		this.tweens.add({
+			targets: slime,
+			x:1000,
+		    ease: 'Linear',
+		    duration: 4000,
+		});
+		//slime.anims.play('fly', true);
+	}
+
+	if (slime.x >= 700) {
+		this.tweens.add({
+			targets: slime,
+			x: -400,
+			ease: 'Linear',
+			duration: 4000,
+		});
+		//slime.anims.play('fly', true);
+	}
+
+	//VIE//
 	if (nVie==2) {
             vie3.destroy(true);
 
@@ -311,11 +402,6 @@ function update(){
 			player.setTint(0xff0000);
 			player.anims.play('turn');
         }
-
-
-	
-
-
 }
 
 function hitBomb(player, bomb){
@@ -326,8 +412,6 @@ function hitBomb(player, bomb){
 }
 
 function hitPotion(bomb, potion) {
-
-	console.log('touch');
 
 	bomb.disableBody(true,true);
 	potion.disableBody(true,true);
@@ -367,6 +451,12 @@ function collectStar(player, star){
 	}
 }
 
+function hitslime(slime, potion) {
+
+	score -= 5;
+	scoreText.setText('score: '+score);
+}
+
 function collectHeal(player, potion) {
 	if (nVie == 3) {
 		potion.disableBody(true,true);
@@ -380,19 +470,30 @@ function collectHeal(player, potion) {
 		}
 		
 	}
+	if (nVie <= 2 ){
+		potion.disableBody(false,false);
+		score += 10;
+		scoreText.setText('score: '+score);
 
+		if(potionHeal.countActive(true)===0){
+			potionHeal.children.iterate(function(child){
+			child.enableBody(true,child.x,child.y - 170, true, true);
+			});
+		}
+		
+	}
 	if (nVie < 3) {
 		potion.disableBody(true,true);
 		nVie++;
 		score += 10;
 		scoreText.setText('score: '+score);
+
 		if(potionHeal.countActive(true)===0){
 			potionHeal.children.iterate(function(child){
 			child.enableBody(true,child.x,child.y - 170, true, true);
 			});
 		}
 
-		
 		if (nVie==3) {
     	vie3 = this.add.image(0,0, 'vie3').setOrigin(0,0);
     	}
@@ -403,9 +504,26 @@ function collectHeal(player, potion) {
 	}
 	
 }
-function collectHealBombs(bombs, potion) {
+
+function collectHealSlime(slime, potion) {
+
 	potion.disableBody(true,true);
-	bombs.destroy();
+
+	if(potionHeal.countActive(true)===0){
+		potionHeal.children.iterate(function(child){
+		child.enableBody(true,child.x,child.y - 170, true, true);
+		});
+	}
+		
+	
+
+}
+function collectHealBombs(bomb, potion) {
+
+	bomb.disableBody(true,true);
+	potion.disableBody(true,true);
+
 	score -= 5;
 	scoreText.setText('score: '+score);
 }
+
