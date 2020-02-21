@@ -34,6 +34,8 @@ var score = 0;
 	var potionHeal;
 	var saut = 2;
 	var nSaut = 1;
+	var direction = 'right';
+	var Feu;
 
 
 function preload(){
@@ -45,6 +47,9 @@ function preload(){
 	this.load.image('background4','assets/background4.png');
 	this.load.image('background5','assets/background5.png');
 	this.load.image('background6','assets/background6.png');
+
+	//BULLET//
+	this.load.image('bullet','assets/bullet.png');
 
 	//piece//
 	this.load.image('piece','assets/piece.png');
@@ -85,9 +90,7 @@ function create(){
 	this.load.image('vie3','assets/vie3.png');
 	this.load.image('vie2','assets/vie2.png');
 	this.load.image('vie1','assets/vie1.png');
-
 	
-
 	//sol//
 	platforms = this.physics.add.staticGroup();
 	platforms.create(20,580,'platforms').setScale(1.2).refreshBody();
@@ -147,6 +150,15 @@ function create(){
 		frameRate: 10,
 		repeat: -1
 	});
+
+
+	this.anims.create({
+		key:'right',
+		frames: this.anims.generateFrameNumbers('adventurer', {start: 0, end: 3}),
+		frameRate: 10,
+		repeat: -1
+	});
+
 	this.anims.create({
 		key:'stop',
 		frames: [{key: 'adventurer', frame:4}],
@@ -222,23 +234,24 @@ function create(){
 		stars.create(220,400,'piece');
 
 		//NIV3//
-		//stars.create(50,320,'piece');
+		stars.create(50,320,'piece');
 
 		//NIV4//
-		//stars.create(470,280,'piece');
+		stars.create(470,280,'piece');
 
 		//NIV5//
-		//stars.create(120,160,'piece');
+		stars.create(120,160,'piece');
 
 		//NIV6//
-		//stars.create(750,120,'piece');
+		stars.create(750,120,'piece');
 
 		this.physics.add.collider(stars, platforms);
 		this.physics.add.collider(stars, player, collectStar, null, this);
 
 		
 
-	cursors = this.input.keyboard.createCursorKeys(); 
+	cursors = this.input.keyboard.createCursorKeys();
+	Feu = this.input.keyboard.addKeys('A');
 
 	//SCORE//
 	scoreText = this.add.text(600,16, 'score: 0', {fontSize: '32px', fill:'#000'});
@@ -270,8 +283,13 @@ function create(){
 
 function update(){
 
+	if ( Phaser.Input.Keyboard.JustDown(Feu)) {
+   		tirer(player, direction);
+	}
+
 
 	if(cursors.left.isDown){
+		player.direction = 'left';
 		player.anims.play('left', true);
 		player.setVelocityX(-200);
 		player.setFlipX(false);
@@ -282,8 +300,9 @@ function update(){
 		}
 	}
 	else if(cursors.right.isDown){
+		player.direction = 'right';
 		player.setVelocityX(200);
-		player.anims.play('left', true);
+		player.anims.play('right', true);
 		player.setFlipX(true);
 
 		//COURRIR//
@@ -295,7 +314,7 @@ function update(){
 		player.anims.play('stop', true);
 		player.setVelocityX(0);
 	}
-	
+	//DOUBLE SAUT//
 	if(cursors.up.isDown && player.body.touching.down){
 		saut = 2;
 	}
@@ -403,6 +422,19 @@ function update(){
 			player.anims.play('turn');
         }
 }
+
+function tirer(player) {
+ 	var coefDir;
+ 	    if (player.direction == 'left') { coefDir = -1; } else { coefDir = 1 }
+         // on crée la balle a coté du joueur
+         var bullet = groupeBullets.create(player.x + (25 * coefDir), player.y - 4, 'bullet');
+         // parametres physiques de la balle.
+         bullet.setCollideWorldBounds(true);
+         bullet.body.allowGravity =false;
+         bullet.setVelocity(1000 * coefDir, 0); // vitesse en x et en y
+ 	alert ("joueur en position"+player.x + ","+player.y + " ; direction du tir : "+ player.direction) ; 
+}
+
 
 function hitBomb(player, bomb){
 	nVie--;
