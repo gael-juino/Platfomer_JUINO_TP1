@@ -507,6 +507,7 @@ function collectHeal(player, potion) {
 
 function collectHealSlime(slime, potion) {
 
+
 	potion.disableBody(true,true);
 
 	if(potionHeal.countActive(true)===0){
@@ -522,6 +523,7 @@ function collectHealBombs(bomb, potion) {
 
 	bomb.disableBody(true,true);
 	potion.disableBody(true,true);
+
 
 	score -= 5;
 	scoreText.setText('score: '+score);
