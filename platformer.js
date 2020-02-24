@@ -68,6 +68,7 @@ function preload(){
 	this.load.image('platforme','assets/platforme.png');
 
 	//personnage//
+	this.load.image('bomb','assets/bomb.png');
 	this.load.image('bat','assets/bat.png',{frameWidth: 6, frameHeight: 12});
 	this.load.spritesheet('adventurer','assets/adventurer.png',{frameWidth: 20, frameHeight: 35});
 	this.load.spritesheet('slime','assets/slime.png',{frameWidth: 30, frameHeight: 25});
@@ -77,6 +78,8 @@ function preload(){
 
 
 function create(){
+
+	this.load.image('bomb','assets/bomb.png');
 	//BACKGROUND//
 	this.add.image(400,300,'background1');
 	this.add.image(400,300,'background2');
@@ -231,19 +234,19 @@ function create(){
 		stars.create(690,440,'piece');
 
 		//NIV2//
-		stars.create(220,400,'piece');
+		//stars.create(220,400,'piece');
 
 		//NIV3//
-		stars.create(50,320,'piece');
+		//stars.create(50,320,'piece');
 
 		//NIV4//
-		stars.create(470,280,'piece');
+		//stars.create(470,280,'piece');
 
 		//NIV5//
-		stars.create(120,160,'piece');
+		//stars.create(120,160,'piece');
 
 		//NIV6//
-		stars.create(750,120,'piece');
+		//stars.create(750,120,'piece');
 
 		this.physics.add.collider(stars, platforms);
 		this.physics.add.collider(stars, player, collectStar, null, this);
@@ -261,8 +264,8 @@ function create(){
 	this.physics.add.collider(bombs,platforms);
 	this.physics.add.overlap(player, bombs, hitBomb, null, this);
 	this.anims.create({
-		key:'monstre',
-		frames: this.anims.generateFrameNumbers('bat', {start: 0, end: 3}),
+		key:'bomb',
+		frames: this.anims.generateFrameNumbers('bomb', {start: 0, end: 3}),
 		frameRate: 10,
 		repeat: -1
 	});
@@ -560,4 +563,3 @@ function collectHealBombs(bomb, potion) {
 	score -= 5;
 	scoreText.setText('score: '+score);
 }
-
