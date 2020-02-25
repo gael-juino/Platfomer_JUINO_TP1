@@ -6,7 +6,7 @@ physics: {
         default: 'arcade',
         arcade: {
             gravity: { y: 300 },
-            debug: true
+            debug: false
         }
     },
 scene: {
@@ -234,19 +234,19 @@ function create(){
 		stars.create(690,440,'piece');
 
 		//NIV2//
-		//stars.create(220,400,'piece');
+		stars.create(220,400,'piece');
 
 		//NIV3//
-		//stars.create(50,320,'piece');
+		stars.create(50,320,'piece');
 
 		//NIV4//
-		//stars.create(470,280,'piece');
+		stars.create(470,280,'piece');
 
 		//NIV5//
-		//stars.create(120,160,'piece');
+		stars.create(120,160,'piece');
 
 		//NIV6//
-		//stars.create(750,120,'piece');
+		stars.create(750,120,'piece');
 
 		this.physics.add.collider(stars, platforms);
 		this.physics.add.collider(stars, player, collectStar, null, this);
